@@ -3,4 +3,6 @@ export interface IHostServer {
   ipAddr: string
   monitoring?: boolean
   alive?: boolean
+  aliveAckTime?: Date
+  aliveAckText?: string
 }

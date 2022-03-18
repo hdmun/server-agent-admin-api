@@ -1,10 +1,12 @@
 import 'reflect-metadata'
 import * as http from 'http'
+import { Server } from 'socket.io'
 import express, { Express } from 'express'
 import consola from 'consola'
 
 import { HostController } from './controller'
 import dbConnection from './infrastructure/connection'
+import { SubscribeService } from './service/pubsubService'
 
 export default class ServerApp {
   app: Express
@@ -16,6 +18,9 @@ export default class ServerApp {
   httpServer: http.Server
   hostController: HostController
 
+  sockio: Server
+  pubsubService: SubscribeService
+
   constructor () {
     this.app = express()
 
@@ -24,8 +29,14 @@ export default class ServerApp {
     this.port = config.port
 
     this.httpServer = http.createServer(this.app)
-
     this.hostController = new HostController()
+
+    this.sockio = new Server(this.httpServer, {
+      cors: {
+        origin: "http://localhost:3000"
+      }
+    })
+    this.pubsubService = new SubscribeService(this.sockio)
   }
 
   initializeRouter() {
@@ -54,5 +65,7 @@ export default class ServerApp {
   async start() {
     await this.setup()
     this.listen()
+
+    this.pubsubService.start()
   }
 }
