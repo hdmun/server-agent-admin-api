@@ -2,7 +2,7 @@ import consola from 'consola'
 import { Router, Request, Response, NextFunction } from 'express'
 import { getConnection } from 'typeorm'
 
-import { HostServer } from '../entity/hostServer'
+import { HostServer } from '../entity/HostServer'
 
 const async_ = (asyncFn: Function) => {
   return (async (req: Request, res: Response, next: NextFunction) => {

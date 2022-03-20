@@ -3,9 +3,9 @@ import * as http from 'http'
 import { Server } from 'socket.io'
 import express, { Express } from 'express'
 import consola from 'consola'
+import { createConnection } from 'typeorm'
 
 import { HostController } from './controller'
-import dbConnection from './infrastructure/connection'
 import { SubscribeService } from './service/pubsubService'
 
 export default class ServerApp {
@@ -45,7 +45,12 @@ export default class ServerApp {
   }
 
   async setup() {
-    await dbConnection()
+    try {
+      await createConnection()
+    } catch (error) {
+      consola.error(error)
+      throw error
+    }
     consola.info(`connected database`);
 
     this.initializeRouter()
