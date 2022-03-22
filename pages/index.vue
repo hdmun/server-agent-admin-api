@@ -13,15 +13,15 @@
     >
       <template #[`item.monitoring`]="{ item }">
         <v-chip
-          :color="getColor(item.monitoring)"
+          :color="colorForMonitoring(item.hostName)"
         >
-          {{ getTextMonitoring(item.monitoring) }}
+          {{ textForMonitoring(item.monitoring) }}
         </v-chip>
       </template>
 
       <template #[`item.alive`]="{ item }">
         <v-chip
-          :color="getColor(item.alive)"
+          :color="colorForAliveAck(item.alive)"
         >
           {{ item.aliveAckText }}
         </v-chip>
@@ -31,24 +31,18 @@
 </template>
 
 <script lang="ts">
+import { Context } from '@nuxt/types'
 import Vue from 'vue'
-import { IHostServer } from '~/interface/hostServer'
+import { getModule } from 'vuex-module-decorators'
+
+import { IHostServerInfo } from '~/interface/hostServer'
+import HostServerModule from '~/store/hostServer'
 import socket from '~/plugins/socket.io'
 
 
 export default Vue.extend({
-  async asyncData({ $axios }) {
-    try {
-      const response = await $axios.get<IHostServer[]>(`/api/servers`)
-      return {
-        hostServers: response.data.map((value) => {
-          value.aliveAckText = '연결 안됨'
-          return value
-        })
-      }
-    } catch (error) {
-      return {}
-    }
+  asyncData(_context: Context) {
+    return {}
   },
   data() {
     return {
@@ -58,63 +52,38 @@ export default Vue.extend({
         { text: 'Monitoring', value: 'monitoring' },
         { text: 'AliveAck', value: 'alive' },
       ],
-      hostServers: [] as IHostServer[],
       selected: []
     }
   },
+  computed: {
+    hostServers() {
+      return getModule(HostServerModule, this.$store).servers
+    }
+  },
+  beforeDestroy() {
+    socket.off('HostInfo', this.onHostInfo)
+  },
   mounted() {
-    socket.on('ServerInfo', (message) => {
-      const serverInfo = JSON.parse(message)
-      const filter = this.hostServers.filter((value) => {
-        return serverInfo.data.hostName === value.hostName
-      })
-
-      for (const item of filter) {
-        const nowdt = new Date()
-        if (item.aliveAckTime === undefined) {
-          item.aliveAckTime = nowdt
-          continue
-        }
-
-        const lastAckTime = item.aliveAckTime
-        const diffMin = this.getDifferenceInMinutes(lastAckTime, nowdt)
-        const diffSec = this.getDifferenceInSeconds(lastAckTime, nowdt) % 60
-        if (diffMin > 0 || diffSec > 0) {
-          let aliveAckText = ''
-
-          if (diffMin > 0) {
-            aliveAckText = `${diffMin}분`
-          }
-
-          if (diffSec > 0) {
-            aliveAckText += `${diffSec}초 전`
-          }
-
-          item.aliveAckText = aliveAckText
-        }
-
-        item.aliveAckTime = nowdt
-      }
-    })
+    socket.on('HostInfo', this.onHostInfo)
+    getModule(HostServerModule, this.$store).loadServers()
   },
   methods: {
-    getColor(on?: boolean): string {
-      return on ? 'green' : 'red'
+    hostServerModule() {
+      return getModule(HostServerModule, this.$store)
     },
-    getTextMonitoring(on?: boolean): string {
+    onHostInfo(message: string) {
+      const hostServers = JSON.parse(message) as IHostServerInfo[]
+      this.hostServerModule().onAliveAck(hostServers)
+    },
+    colorForMonitoring(hostName: string) {
+      return this.hostServerModule().colorMonitoring(hostName)
+    },
+    textForMonitoring(on?: boolean): string {
       return on ? 'ON' : 'OFF'
     },
-    getTextAlive(on?: boolean): string {
-      return on ? '연결중' : '연결 안됨'
+    colorForAliveAck(hostName: string) {
+      return this.hostServerModule().colorAliveAck(hostName)
     },
-    getDifferenceInMinutes(before: Date, after: Date) {
-      const diffInMs = Math.abs(after.getTime() - before.getTime());
-      return Math.floor(diffInMs / (1000 * 60));
-    },
-    getDifferenceInSeconds(before: Date, after: Date) {
-      const diffInMs = Math.abs(after.getTime() - before.getTime());
-      return Math.floor(diffInMs / 1000);
-    }
   }
 })
 </script>

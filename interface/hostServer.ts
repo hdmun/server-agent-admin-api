@@ -1,8 +1,9 @@
 export interface IHostServer {
   hostName: string
   ipAddr: string
-  monitoring?: boolean
-  alive?: boolean
-  aliveAckTime?: Date
-  aliveAckText?: string
+}
+
+export interface IHostServerInfo {
+  hostName: string
+  monitoring: boolean
 }
