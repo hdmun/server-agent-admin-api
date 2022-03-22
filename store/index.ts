@@ -1,15 +1,7 @@
-import Vue from 'vue'
-import Vuex, { Store }from 'vuex'
+import { Store } from 'vuex'
+import { initialiseStores } from '~/utils/store-accessor'
 
-import HostServerStore from '~/store/hostServer'
+const initializer = (store: Store<any>) => initialiseStores(store)
 
-Vue.use(Vuex)
-
-export interface RootState {}
-
-export const store = new Store<RootState>({
-  modules: {
-    hostServer: HostServerStore,
-  },
-  strict: process.env.NODE_ENV !== 'production',
-})
+export const plugins = [initializer]
+export * from '~/utils/store-accessor'

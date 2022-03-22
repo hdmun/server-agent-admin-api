@@ -33,12 +33,10 @@
 <script lang="ts">
 import { Context } from '@nuxt/types'
 import Vue from 'vue'
-import { getModule } from 'vuex-module-decorators'
 
 import { IHostServerInfo } from '~/interface/hostServer'
-import HostServerModule from '~/store/hostServer'
 import socket from '~/plugins/socket.io'
-
+import { hostServerStore } from '~/store'
 
 export default Vue.extend({
   asyncData(_context: Context) {
@@ -57,7 +55,7 @@ export default Vue.extend({
   },
   computed: {
     hostServers() {
-      return getModule(HostServerModule, this.$store).servers
+      return hostServerStore.serverList
     }
   },
   beforeDestroy() {
@@ -65,24 +63,21 @@ export default Vue.extend({
   },
   mounted() {
     socket.on('HostInfo', this.onHostInfo)
-    getModule(HostServerModule, this.$store).loadServers()
+    hostServerStore.loadServers()
   },
   methods: {
-    hostServerModule() {
-      return getModule(HostServerModule, this.$store)
-    },
     onHostInfo(message: string) {
-      const hostServers = JSON.parse(message) as IHostServerInfo[]
-      this.hostServerModule().onAliveAck(hostServers)
+      const hostServer = JSON.parse(message) as IHostServerInfo
+      hostServerStore.onAliveAck(hostServer)
     },
     colorForMonitoring(hostName: string) {
-      return this.hostServerModule().colorMonitoring(hostName)
+      return hostServerStore.colorMonitoring(hostName)
     },
     textForMonitoring(on?: boolean): string {
       return on ? 'ON' : 'OFF'
     },
     colorForAliveAck(hostName: string) {
-      return this.hostServerModule().colorAliveAck(hostName)
+      return hostServerStore.colorAliveAck(hostName)
     },
   }
 })

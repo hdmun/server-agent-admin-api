@@ -16,6 +16,12 @@ interface HostServerState {
 }
 
 
+function diffInSec(before: Date, after: Date) {
+  const diffInMs = Math.abs(after.getTime() - before.getTime());
+  return Math.floor(diffInMs / 1000);
+}
+
+
 @Module({
   name: 'hostServer',
   namespaced: true
@@ -49,40 +55,35 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     }
   }
 
-  diffInSec(before: Date, after: Date) {
-    const diffInMs = Math.abs(after.getTime() - before.getTime());
-    return Math.floor(diffInMs / 1000);
-  }
-
   @Mutation
-  onAliveAck(hostServers: IHostServerInfo[]) {
+  onAliveAck(hostServer: IHostServerInfo) {
     const nowdt = new Date()
-    for (const hostServer of hostServers) {
-      const host = this.hostMap[hostServer.hostName]
-      host.monitoring = hostServer.monitoring
+    const host = this.hostMap[hostServer.hostName]
+    host.monitoring = hostServer.monitoring
 
-      if (host.aliveAckTime === undefined) {
-        host.alive = true
-        host.aliveAckTime = nowdt
-        continue
-      }
-
-      const lastAcliveAckTime = host.aliveAckTime
-      const diffSec = this.diffInSec(lastAcliveAckTime, nowdt)
-      if (diffSec > 1) {
-        host.alive = false
-        host.aliveAckText = `${diffSec} 초 지연`
-      }
-      else {
-        host.alive = true
-        host.aliveAckText = '연결 중'
-      }
-
+    if (host.aliveAckTime === undefined) {
+      host.alive = true
       host.aliveAckTime = nowdt
+      this.servers = [...this.servers]
+      return
     }
+
+    const lastAcliveAckTime = host.aliveAckTime
+    const diffSec = diffInSec(lastAcliveAckTime, nowdt)
+    if (diffSec > 1) {
+      host.alive = false
+      host.aliveAckText = `${diffSec} 초 지연`
+    }
+    else {
+      host.alive = true
+      host.aliveAckText = '연결 중'
+    }
+
+    host.aliveAckTime = nowdt
+    this.servers = [...this.servers]
   }
 
-  @Action
+  @Action({ commit: 'updateServers' })
   async loadServers() {
     const response = await $axios.get<IHostServer[]>(`/api/servers`)
     const servers = response.data.map<HostServerInfo>((value) => {
@@ -92,6 +93,6 @@ export default class HostServerStore extends VuexModule implements HostServerSta
       }
     })
 
-    this.context.commit('updateServers', servers)
+    return servers
   }
 }
