@@ -7,3 +7,8 @@ export interface IHostServerInfo {
   hostName: string
   monitoring: boolean
 }
+
+export interface IServersMonitoring {
+  hostName: string
+  on: boolean
+}

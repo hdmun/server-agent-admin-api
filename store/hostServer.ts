@@ -46,8 +46,14 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     }
   }
 
+  get isAliveHost() {
+    return (hostName: string) => {
+      return this.hostMap[hostName]?.alive ?? false
+    }
+  }
+
   @Mutation
-  updateServers(servers: HostServerInfo[]) {
+  setServers(servers: HostServerInfo[]) {
     this.servers = servers
     for (const host of servers) {
       this.hostMap[host.hostName] = host
@@ -56,20 +62,31 @@ export default class HostServerStore extends VuexModule implements HostServerSta
   }
 
   @Mutation
-  onAliveAck(hostServer: IHostServerInfo) {
-    const nowdt = new Date()
-    const host = this.hostMap[hostServer.hostName]
-    host.monitoring = hostServer.monitoring
-
-    if (host.aliveAckTime === undefined) {
-      host.alive = true
-      host.aliveAckTime = nowdt
-      this.servers = [...this.servers]
+  updateMonitoring(server?: HostServerInfo) {
+    if (server === undefined) {
       return
     }
 
-    const lastAcliveAckTime = host.aliveAckTime
-    const diffSec = diffInSec(lastAcliveAckTime, nowdt)
+    const host = this.hostMap[server.hostName]
+    host.monitoring = server.monitoring
+  }
+
+  @Mutation
+  onAliveAck(hostServer: IHostServerInfo) {
+    const host = this.hostMap[hostServer.hostName]
+    host.monitoring = hostServer.monitoring
+    host.aliveAckTime = new Date()
+    this.servers = [...this.servers]
+  }
+
+  @Mutation
+  onUpdateAliveAck(host: HostServerInfo) {
+    if (host.aliveAckTime === undefined) {
+      return
+    }
+
+    const nowdt = new Date()
+    const diffSec = diffInSec(host.aliveAckTime, nowdt)
     if (diffSec > 1) {
       host.alive = false
       host.aliveAckText = `${diffSec} 초 지연`
@@ -83,7 +100,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     this.servers = [...this.servers]
   }
 
-  @Action({ commit: 'updateServers' })
+  @Action({ commit: 'setServers' })
   async loadServers() {
     const response = await $axios.get<IHostServer[]>(`/api/servers`)
     const servers = response.data.map<HostServerInfo>((value) => {
@@ -94,5 +111,22 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     })
 
     return servers
+  }
+
+  @Action({ commit: 'updateMonitoring' })
+  async setMonitoring(req: IHostServerInfo) {
+    await $axios.put<IHostServerInfo>(`/api/servers/monitoring`, {
+      hostName: req.hostName,
+      monitoring: req.monitoring,
+    })
+
+    return req
+  }
+
+  @Action
+  updateHostStatus() {
+    for (const host of this.serverList) {
+      this.onUpdateAliveAck(host)
+    }
   }
 }

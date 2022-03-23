@@ -23,6 +23,7 @@ export default class ServerApp {
 
   constructor () {
     this.app = express()
+    this.app.use(express.json())
 
     const config = require('./config.json')
     this.host = config.host
