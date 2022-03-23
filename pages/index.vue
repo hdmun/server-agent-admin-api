@@ -32,7 +32,7 @@
     </v-data-table>
 
     <v-dialog
-      v-model="dialog.show"
+      v-model="isAsk"
       persistent
       max-width="290"
       >
@@ -63,6 +63,8 @@
       </v-card>
     </v-dialog>
 
+    <LoadingDialog :message="'waiting...'" :open="dialog.progress" />
+
     <ErrorSnackBar :text="errorMessage" :show="errorMessage !== ''"/>
   </v-card>
 </template>
@@ -72,13 +74,16 @@ import { Context } from '@nuxt/types'
 import Vue from 'vue'
 
 import ErrorSnackBar from '@/components/ErrorSnackBar.vue'
+import LoadingDialog from '@/components/LoadingDialog.vue'
+
 import { IHostServerInfo } from '~/interface/hostServer'
 import socket from '~/plugins/socket.io'
 import { hostServerStore } from '~/store'
 
 export default Vue.extend({
   components: {
-    ErrorSnackBar
+    ErrorSnackBar,
+    LoadingDialog
   },
   asyncData(_context: Context) {
     return {}
@@ -93,8 +98,8 @@ export default Vue.extend({
       ],
       selected: [],
       dialog: {
-        show: false,
-        selected: undefined as IHostServerInfo | undefined
+        selected: undefined as IHostServerInfo | undefined,
+        progress: false
       },
       errorMessage: '',
       timerHandle: undefined as number | undefined
@@ -103,6 +108,9 @@ export default Vue.extend({
   computed: {
     hostServers() {
       return hostServerStore.serverList
+    },
+    isAsk(): boolean {
+      return this.dialog.selected !== undefined
     },
     isAliveHost() {
       return (hostName: string) => {
@@ -136,28 +144,26 @@ export default Vue.extend({
       return hostServerStore.colorAliveAck(hostName)
     },
     onShowConfirmMonitoring(selected: IHostServerInfo) {
-      this.dialog = {
-        show: true,
-        selected: {
-          hostName: selected.hostName,
-          monitoring: !selected.monitoring
-        }
+      this.dialog.selected = {
+        hostName: selected.hostName,
+        monitoring: !selected.monitoring
       }
     },
     closeConfirmMonitoring() {
-      this.dialog = {
-        show: false,
-        selected: undefined
-      }
+      this.dialog.selected = undefined
     },
     async onSetMonitoring() {
-      if (this.dialog.selected === undefined) {
-        this.closeConfirmMonitoring()
+      const host = this.dialog.selected
+      if (host === undefined) {
+        this.errorMessage = '선택된 호스트 머신이 없습니다.'
         return
       }
 
+      this.closeConfirmMonitoring()
+
       try {
-        await hostServerStore.setMonitoring(this.dialog.selected)
+        this.dialog.progress = true
+        await hostServerStore.setMonitoring(host)
       }
       catch (error) {
         let message = ''
@@ -168,7 +174,7 @@ export default Vue.extend({
         console.log(message)
       }
       finally {
-        this.closeConfirmMonitoring()
+        this.dialog.progress = false
       }
     },
   }
