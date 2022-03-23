@@ -69,6 +69,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
 
     const host = this.hostMap[server.hostName]
     host.monitoring = server.monitoring
+    this.servers = [...this.servers]
   }
 
   @Mutation
@@ -97,6 +98,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     }
 
     host.aliveAckTime = nowdt
+
     this.servers = [...this.servers]
   }
 
@@ -114,14 +116,11 @@ export default class HostServerStore extends VuexModule implements HostServerSta
   }
 
   @Action({ commit: 'updateMonitoring' })
-  async setMonitoring(req: IHostServerInfo) {
-    await $axios.put<IHostServerInfo>(`/api/servers/monitoring`, {
-      hostName: req.hostName,
-      monitoring: req.monitoring,
-    })
-
-    return req
+  async setMonitoring(request: IHostServerInfo) {
+    const response = await $axios.put<IHostServerInfo>(`/api/servers/monitoring`, request)
+    return response.data
   }
+
 
   @Action
   updateHostStatus() {
