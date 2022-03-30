@@ -6,13 +6,13 @@ import { IServerProcess, IServerProcessInfo } from '~/interface/serverProcess'
 import { $axios } from '~/utils/axios'
 
 export interface ServerProcessInfo {
+  hostName: string
   serverName: string
   processName: string
   processingTime: number
   threadId: number
   receiveTime: string
   alive: boolean
-  aliveText: string
 }
 
 interface ProcessState {
@@ -26,6 +26,7 @@ interface ProcessDictionary {
 
 interface ServerProcessState {
   processDict: ProcessDictionary
+  listAll: ServerProcessInfo[]
 }
 
 @Module({
@@ -34,11 +35,16 @@ interface ServerProcessState {
 })
 export default class ServerProcessStore extends VuexModule implements ServerProcessState {
   processDict: ProcessDictionary = {}
+  listAll: ServerProcessInfo[] = []
 
   get processByHost() {
     return (hostName: string): ServerProcessInfo[] => {
       return this.processDict[hostName]?.list ?? []
     }
+  }
+
+  get processAll() {
+    return this.listAll
   }
 
   @MutationAction
@@ -51,13 +57,13 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
       const state = accum[current.hostName]
       if (!(current.serverName in state.map)) {
         state.map[current.serverName] = {
+          hostName: current.hostName,
           serverName: current.serverName,
           processName: path.basename(current.processPath),
           processingTime: -1,
           threadId: -1,
           receiveTime: 'waiting...',
           alive: false,
-          aliveText: 'waiting...'
         }
 
         state.list.push(state.map[current.serverName])
@@ -66,7 +72,13 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
       return accum
     }, {})
 
-    return { processDict }
+    const listAll = Object.keys(processDict)
+      .map(key => {
+        return processDict[key].list
+      })
+      .flatMap(value => value)
+
+    return { processDict, listAll }
   }
 
   @Mutation
@@ -89,7 +101,6 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
       process.receiveTime = `${diffSec} 초 전`
     }
     process.alive = serverInfo.alive
-    process.aliveText = serverInfo.alive ? 'Running' : 'Dead'
 
     this.processDict = {...this.processDict}
   }

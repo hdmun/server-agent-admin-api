@@ -67,6 +67,11 @@ export default {
           title: 'Host Machine',
           to: '/hostMachine',
         },
+        {
+          icon: 'mdi-desktop-classic',
+          title: 'Process',
+          to: '/serverProcess'
+        }
       ],
       miniVariant: false,
       right: true,

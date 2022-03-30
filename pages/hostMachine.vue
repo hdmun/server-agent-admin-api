@@ -184,7 +184,6 @@ export default Vue.extend({
         else message = String(error)
 
         this.errorMessage = message
-        console.log(message)
       }
       finally {
         this.dialog.progress = false

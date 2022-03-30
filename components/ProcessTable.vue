@@ -6,7 +6,7 @@
           <tr>
             <th>Process</th>
             <th>Server</th>
-            <th>Processing</th>
+            <th>ProcessingTime(sec)</th>
             <th>ThreadId</th>
             <th>마지막 응답 시간</th>
             <th>Alive</th>
@@ -24,9 +24,9 @@
             <td>{{ process.receiveTime}}</td>
             <td>
               <v-chip
-                :color="colorForAlive(process.alive)"
+                :color="aliveColor(process.alive)"
               >
-                {{ process.aliveText }}
+                {{ aliveText(process.alive) }}
               </v-chip>
             </td>
           </tr>
@@ -70,9 +70,12 @@ export default Vue.extend({
       const serverInfo = JSON.parse(message) as IServerProcessInfo
       serverProcessStore.onUpdate(serverInfo)
     },
-    colorForAlive(isAlive: boolean) {
+    aliveColor(isAlive: boolean) {
       return isAlive ? 'green' : 'red'
     },
+    aliveText(isAlive: boolean) {
+      return isAlive ? 'Running' : 'Dead'
+    }
   }
 })
 </script>
