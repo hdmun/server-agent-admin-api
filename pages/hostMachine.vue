@@ -27,7 +27,7 @@
 
       <template #[`item.alive`]="{ item }">
         <v-chip
-          :color="colorForAliveAck(item.alive)"
+          :color="colorForAliveAck(item.hostName)"
         >
           {{ item.aliveAckText }}
         </v-chip>
