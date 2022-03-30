@@ -5,7 +5,7 @@ import express, { Express } from 'express'
 import consola from 'consola'
 import { createConnection } from 'typeorm'
 
-import { HostController } from './controller'
+import { HostController, ProcessController } from './controller'
 import { SubscribeService } from './service/pubsubService'
 
 export default class ServerApp {
@@ -17,6 +17,7 @@ export default class ServerApp {
 
   httpServer: http.Server
   hostController: HostController
+  processController: ProcessController
 
   sockio: Server
   pubsubService: SubscribeService
@@ -31,6 +32,7 @@ export default class ServerApp {
 
     this.httpServer = http.createServer(this.app)
     this.hostController = new HostController()
+    this.processController = new ProcessController()
 
     this.sockio = new Server(this.httpServer, {
       cors: {
@@ -43,6 +45,7 @@ export default class ServerApp {
   initializeRouter() {
     consola.info(`initialize router`);
     this.app.use(this.hostController.router)
+    this.app.use(this.processController.router)
   }
 
   async setup() {

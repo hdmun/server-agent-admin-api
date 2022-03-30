@@ -10,3 +10,17 @@ CREATE TABLE [dbo].[HostServer] (
 	[IPAddr] varchar(15) NOT NULL
 )
 GO
+
+
+IF OBJECT_ID('[dbo].[ServerProcess]') IS NOT NULL
+	DROP TABLE [dbo].[ServerProcess]
+GO
+
+CREATE TABLE [dbo].[ServerProcess] (
+	[HostName] varchar(30) NOT NULL,
+	[ServerName] varchar(255) NOT NULL,
+	[ProcessPath] varchar(255) NOT NULL,
+
+	PRIMARY KEY([HostName], [ServerName])
+)
+GO

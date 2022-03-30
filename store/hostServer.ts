@@ -2,6 +2,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators'
 
 import { IHostServer, IHostServerInfo } from '~/interface/hostServer'
 import { $axios } from '~/utils/axios'
+import { diffPerSec } from '.'
 
 export interface HostServerInfo extends IHostServer {
   monitoring?: boolean
@@ -13,12 +14,6 @@ export interface HostServerInfo extends IHostServer {
 interface HostServerState {
   servers: HostServerInfo[]
   hostMap: {[key: string]: HostServerInfo}
-}
-
-
-function diffInSec(before: Date, after: Date) {
-  const diffInMs = Math.abs(after.getTime() - before.getTime());
-  return Math.floor(diffInMs / 1000);
 }
 
 
@@ -87,7 +82,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     }
 
     const nowdt = new Date()
-    const diffSec = diffInSec(host.aliveAckTime, nowdt)
+    const diffSec = diffPerSec(host.aliveAckTime, nowdt)
     if (diffSec > 1) {
       host.alive = false
       host.aliveAckText = `${diffSec} 초 지연`

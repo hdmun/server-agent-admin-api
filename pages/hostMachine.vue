@@ -9,7 +9,10 @@
       v-model="selected"
       :headers="headers"
       :items="hostServers"
-      show-select
+      :single-expand="singleExpand"
+      :expanded.sync="expanded"
+      item-key="hostName"
+      show-expand
       class="elevation-1"
     >
       <template #[`item.monitoring`]="{ item }">
@@ -28,6 +31,10 @@
         >
           {{ item.aliveAckText }}
         </v-chip>
+      </template>
+
+      <template #expanded-item="{ item }">
+        <ProcessTable v-if="item" :hostname="item.hostName" />
       </template>
     </v-data-table>
 
@@ -75,6 +82,7 @@ import Vue from 'vue'
 
 import ErrorSnackBar from '@/components/ErrorSnackBar.vue'
 import LoadingDialog from '@/components/LoadingDialog.vue'
+import ProcessTable from '@/components/ProcessTable.vue'
 
 import { IHostServerInfo } from '~/interface/hostServer'
 import socket from '~/plugins/socket.io'
@@ -83,7 +91,8 @@ import { hostServerStore } from '~/store'
 export default Vue.extend({
   components: {
     ErrorSnackBar,
-    LoadingDialog
+    LoadingDialog,
+    ProcessTable
   },
   asyncData(_context: Context) {
     return {}
@@ -96,6 +105,8 @@ export default Vue.extend({
         { text: 'Monitoring', value: 'monitoring' },
         { text: 'AliveAck', value: 'alive' },
       ],
+      expanded: [],
+      singleExpand: true,
       selected: [],
       dialog: {
         selected: undefined as IHostServerInfo | undefined,
@@ -120,10 +131,12 @@ export default Vue.extend({
   },
   beforeDestroy() {
     socket.off('HostInfo', this.onHostInfo)
+
     window.clearInterval(this.timerHandle)
   },
   mounted() {
     socket.on('HostInfo', this.onHostInfo)
+
     hostServerStore.loadServers()
     this.timerHandle = window.setInterval(() => {
       hostServerStore.updateHostStatus()
@@ -180,4 +193,3 @@ export default Vue.extend({
   }
 })
 </script>
- 
