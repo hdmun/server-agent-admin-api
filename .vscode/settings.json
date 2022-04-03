@@ -3,5 +3,14 @@
         "**/.nuxt": true,
         "**/dist": true,
         "**/node_modules": true
-    }
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "octref.vetur"
+    },
+    "prettier.singleQuote": true,
+    "prettier.enable": false,
+    "emmet.includeLanguages": {
+        "vue-html": "html",
+        "vue": "html"
+    },
 }
