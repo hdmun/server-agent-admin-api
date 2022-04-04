@@ -1,5 +1,49 @@
 # server-agent-admin
 
+[server-agent](https://github.com/hdmun/server-agent) 프로젝트에 맞춘 어드민 웹 어플리케이션 프로젝트 입니다.
+
+## Dependency
+
+### API Server
+
+- typescript
+- express
+- typeorm
+- zeromq
+
+### Front with nuxt
+
+- nuxt
+- vuetify
+
+
+# TODO
+
+- 로그인 기능 추가
+
+
+## `api`
+
+`express` 베이스로 만들어진 `restful http` 서버 프로젝트입니다.
+
+최대한 `restful`하게 개발하려고 노력했습니다.
+
+
+## `test`
+
+테스트 코드를 모아놓은 폴더입니다.
+
+구현에 신경쓰느라 테스트 코드를 작성하지 않고 개발했습니다.
+
+추후 테스트 코드를 추가할 예정입니다.
+
+
+# for Nuxt
+
+프론트 페이지 렌더링은 `nuxt` 기반으로 개발되었습니다.
+
+UI 프레임워크는 `vuetify` 기반으로 개발되었습니다.
+
 ## Build Setup
 
 ```bash
