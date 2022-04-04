@@ -1,8 +1,8 @@
 import path from 'path'
-import { Module, VuexModule, MutationAction, Mutation } from 'vuex-module-decorators'
+import { Module, VuexModule, MutationAction, Mutation, Action } from 'vuex-module-decorators'
 
 import { diffPerSec } from '.'
-import { IServerProcess, IServerProcessInfo } from '~/interface/serverProcess'
+import { IRequestProcessKill, IResponseProcessKill, IServerProcess, IServerProcessInfo } from '~/interface/serverProcess'
 import { $axios } from '~/utils/axios'
 
 export interface ServerProcessInfo {
@@ -103,5 +103,11 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
     process.alive = serverInfo.alive
 
     this.processDict = {...this.processDict}
+  }
+
+  @Action
+  async killCommand(request: IRequestProcessKill) {
+    await $axios.put<IResponseProcessKill[]>(`/api/process/kill`, request)
+    // 응답 받은 데이터로 상태를 바로 변경해주는게 나을까?
   }
 }

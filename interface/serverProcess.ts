@@ -11,3 +11,15 @@ export interface IServerProcessInfo extends IServerProcess {
   threadId: number
   lastReceiveTime: string
 }
+
+export interface IRequestProcessKill {
+  hostName: string
+  killCommand: string
+  serverName: string
+}
+
+export interface IResponseProcessKill {
+  serverName: string
+  exitCode: number
+  close: boolean
+}

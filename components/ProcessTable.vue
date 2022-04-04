@@ -10,6 +10,7 @@
             <th>ThreadId</th>
             <th>마지막 응답 시간</th>
             <th>Alive</th>
+            <th>Close Command</th>
           </tr>
         </thead>
         <tbody>
@@ -29,10 +30,27 @@
                 {{ aliveText(process.alive) }}
               </v-chip>
             </td>
+             <td>
+              <v-chip
+                :disabled="!process.alive"
+                @click="onClickClose(process)"
+              >
+                Close
+              </v-chip>
+            </td>
           </tr>
         </tbody>
       </template>
     </v-simple-table>
+
+    <KillCommandDialog
+      :opendialog.sync="openKillCommandDlg"
+      :errormessage.sync="errorMessage"
+      :hostname="hostname"
+      :servername="select.serverName"
+      @onkillcommand="onKillCommand"
+    />
+    <ErrorSnackBar :text="errorMessage" :show="errorMessage !== ''"/>
   </td>
 </template>
 
@@ -47,16 +65,22 @@ export default Vue.extend({
   props: {
     hostname: {
       type: String,
-      required: true
+      required: true,
     },
   },
   data() {
-    return {}
+    return {
+      openKillCommandDlg: false,
+      select: {
+        serverName: '',
+      },
+      errorMessage: ''
+    }
   },
   computed: {
     processes(): ServerProcessInfo[] {
       return serverProcessStore.processByHost(this.hostname)
-    }
+    },
   },
   beforeDestroy() {
     socket.off('ServerInfo', this.onServerInfo)
@@ -66,16 +90,37 @@ export default Vue.extend({
     serverProcessStore.loadProcess()
   },
   methods: {
-    onServerInfo(message: string) {
-      const serverInfo = JSON.parse(message) as IServerProcessInfo
-      serverProcessStore.onUpdate(serverInfo)
-    },
     aliveColor(isAlive: boolean) {
       return isAlive ? 'green' : 'red'
     },
     aliveText(isAlive: boolean) {
       return isAlive ? 'Running' : 'Dead'
+    },
+    onServerInfo(message: string) {
+      const serverInfo = JSON.parse(message) as IServerProcessInfo
+      serverProcessStore.onUpdate(serverInfo)
+    },
+    onClickClose(item: ServerProcessInfo) {
+      this.select.serverName = item.serverName
+      this.openKillCommandDlg = true
+    },
+    onKillCommand(command: string) {
+      try {
+        serverProcessStore.killCommand({
+          hostName: this.hostname,
+          killCommand: command,
+          serverName: this.select.serverName,
+        })
+      } catch (error) {
+        let message = ''
+        if (error instanceof Error) message = error.message
+        else message = String(error)
+
+        this.errorMessage = message
+      }
+
+      this.openKillCommandDlg = false
     }
-  }
+  },
 })
 </script>

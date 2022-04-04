@@ -4,29 +4,40 @@
       서버 프로세스
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="processes"
-      class="elevation-1"
-    >
+    <v-data-table :headers="headers" :items="processes" class="elevation-1">
       <template #[`item.alive`]="{ item }">
-        <v-chip
-          :color="aliveColor(item.alive)"
-        >
+        <v-chip :color="aliveColor(item.alive)">
           {{ aliveText(item.alive) }}
+        </v-chip>
+      </template>
+
+      <template #[`item.command`]="{ item }">
+        <v-chip
+          :disabled="!item.alive"
+          @click="onClickClose"
+        >
+          Close
         </v-chip>
       </template>
     </v-data-table>
 
-    <ErrorSnackBar :text="errorMessage" :show="errorMessage !== ''"/>
+    <KillCommandDialog
+      :opendialog="openKillCommandDlg"
+      :hostname="select.hostName"
+      :servername="select.serverName"
+      @onkillcommand="onKillCommand"
+    />
+    <ErrorSnackBar :text="errorMessage" :show="errorMessage !== ''" />
   </v-card>
 </template>
+
 
 <script lang="ts">
 import { Context } from '@nuxt/types'
 import Vue from 'vue'
 
 import ErrorSnackBar from '@/components/ErrorSnackBar.vue'
+import KillCommandDialog from '@/components/KillCommandDialog.vue'
 
 import { IServerProcessInfo } from '~/interface/serverProcess'
 import socket from '~/plugins/socket.io'
@@ -36,6 +47,7 @@ import { ServerProcessInfo } from '~/store/serverProcess'
 export default Vue.extend({
   components: {
     ErrorSnackBar,
+    KillCommandDialog,
   },
   asyncData(_context: Context) {
     return {}
@@ -50,15 +62,21 @@ export default Vue.extend({
         { text: 'ThreadId', value: 'threadId' },
         { text: '마지막 응답 시간', value: 'receiveTime' },
         { text: 'Alive', value: 'alive' },
+        { text: 'Close Command', value: 'command' },
       ],
       errorMessage: '',
-      timerHandle: undefined as number | undefined
+      timerHandle: undefined as number | undefined,
+      openKillCommandDlg: false,
+      select: {
+        hostName: '',
+        serverName: '',
+      },
     }
   },
   computed: {
     processes(): ServerProcessInfo[] {
       return serverProcessStore.processAll
-    }
+    },
   },
   beforeDestroy() {
     socket.off('ServerInfo', this.onServerInfo)
@@ -77,7 +95,28 @@ export default Vue.extend({
     },
     aliveText(isAlive: boolean) {
       return isAlive ? 'Running' : 'Dead'
-    }
-  }
+    },
+    onClickClose(item: ServerProcessInfo) {
+      this.select.hostName = item.hostName
+      this.select.serverName = item.serverName
+      this.openKillCommandDlg = true
+    },
+    onKillCommand(command: string) {
+      try {
+        serverProcessStore.killCommand({
+          hostName: this.select.hostName,
+          killCommand: command,
+          serverName: this.select.serverName,
+        })
+      } catch (error) {
+        let message = ''
+        if (error instanceof Error) message = error.message
+        else message = String(error)
+
+        this.errorMessage = message
+      }
+      this.openKillCommandDlg = false
+    },
+  },
 })
 </script>
