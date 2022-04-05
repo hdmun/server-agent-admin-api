@@ -2,7 +2,7 @@ import path from 'path'
 import { Module, VuexModule, MutationAction, Mutation, Action } from 'vuex-module-decorators'
 
 import { diffPerSec } from '.'
-import { IRequestProcessKill, IResponseProcessKill, IServerProcess, IServerProcessInfo } from '~/interface/serverProcess'
+import { IRequestProcessKill, IResponseProcessKill, IServerProcess, IServerProcessInfo } from '~/interface/ServerProcess'
 import { $axios } from '~/utils/axios'
 
 export interface ServerProcessInfo {

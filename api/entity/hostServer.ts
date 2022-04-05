@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm'
 
-import { IHostServer } from '~/interface/hostServer'
+import { IHostServer } from '~/interface/HostServer'
 
 @Entity({ name: 'HostServer' })
 export class HostServer implements IHostServer {

@@ -6,7 +6,7 @@ import axios from 'axios'
 import { ServerProcess } from '../entity/ServerProcess'
 import { HostServer } from '../entity/HostServer'
 import { asyncWrap } from '.'
-import { IRequestProcessKill, IResponseProcessKill } from '~/interface/serverProcess'
+import { IRequestProcessKill, IResponseProcessKill } from '~/interface/ServerProcess'
 
 
 export class ProcessController {

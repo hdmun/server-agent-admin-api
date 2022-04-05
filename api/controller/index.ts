@@ -11,5 +11,5 @@ export const asyncWrap = (asyncFunc: Function) => {
   })
 }
 
-export { HostController } from './hostController'
-export { ProcessController } from './processController'
+export { HostController } from './HostController'
+export { ProcessController } from './ProcessController'

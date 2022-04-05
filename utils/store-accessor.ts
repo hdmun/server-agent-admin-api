@@ -1,7 +1,7 @@
 import { Store } from 'vuex'
 import { getModule } from 'vuex-module-decorators'
-import HostServerStore from '~/store/hostServer'
-import ServerProcessStore from '~/store/serverProcess'
+import HostServerStore from '~/store/HostServer'
+import ServerProcessStore from '~/store/ServerProcess'
 
 let hostServerStore: HostServerStore
 let serverProcessStore: ServerProcessStore

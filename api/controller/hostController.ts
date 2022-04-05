@@ -4,7 +4,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { getConnection, getRepository } from 'typeorm'
 
 import { HostServer } from '../entity/HostServer'
-import { IHostServerInfo, IServersMonitoring } from '~/interface/hostServer'
+import { IHostServerInfo, IServersMonitoring } from '~/interface/HostServer'
 
 const async_ = (asyncFn: Function) => {
   return (async (req: Request, res: Response, next: NextFunction) => {

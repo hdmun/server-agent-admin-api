@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm'
 
-import { IServerProcess } from '~/interface/serverProcess'
+import { IServerProcess } from '~/interface/ServerProcess'
 
 @Entity({ name: 'ServerProcess' })
 export class ServerProcess implements IServerProcess {

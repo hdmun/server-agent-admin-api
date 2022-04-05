@@ -65,12 +65,12 @@ export default {
         {
           icon: 'mdi-server',
           title: 'Host Machine',
-          to: '/hostMachine',
+          to: '/HostMachine',
         },
         {
           icon: 'mdi-desktop-classic',
           title: 'Process',
-          to: '/serverProcess'
+          to: '/ServerProcess'
         }
       ],
       miniVariant: false,

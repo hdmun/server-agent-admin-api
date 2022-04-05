@@ -39,10 +39,10 @@ import Vue from 'vue'
 import ErrorSnackBar from '@/components/ErrorSnackBar.vue'
 import KillCommandDialog from '@/components/KillCommandDialog.vue'
 
-import { IServerProcessInfo } from '~/interface/serverProcess'
+import { IServerProcessInfo } from '~/interface/ServerProcess'
 import socket from '~/plugins/socket.io'
 import { serverProcessStore } from '~/store'
-import { ServerProcessInfo } from '~/store/serverProcess'
+import { ServerProcessInfo } from '~/store/ServerProcess'
 
 export default Vue.extend({
   components: {

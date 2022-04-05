@@ -1,7 +1,7 @@
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators'
 
 import { diffPerSec } from '.'
-import { IHostServer, IHostServerInfo } from '~/interface/hostServer'
+import { IHostServer, IHostServerInfo } from '~/interface/HostServer'
 import { $axios } from '~/utils/axios'
 
 export interface HostServerInfo extends IHostServer {

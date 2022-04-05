@@ -56,9 +56,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ServerProcessInfo } from '@/store/serverProcess'
+import { ServerProcessInfo } from '~/store/ServerProcess'
 import { serverProcessStore } from '~/store'
-import { IServerProcessInfo } from '~/interface/serverProcess'
+import { IServerProcessInfo } from '~/interface/ServerProcess'
 import socket from '~/plugins/socket.io'
 
 export default Vue.extend({
