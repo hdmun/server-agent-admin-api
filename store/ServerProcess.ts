@@ -30,7 +30,8 @@ interface ServerProcessState {
 }
 
 @Module({
-  name: 'serverProcess',
+  stateFactory: true,
+  name: 'ServerProcess',
   namespaced: true
 })
 export default class ServerProcessStore extends VuexModule implements ServerProcessState {

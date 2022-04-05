@@ -18,7 +18,8 @@ interface HostServerState {
 
 
 @Module({
-  name: 'hostServer',
+  stateFactory: true,
+  name: 'HostServer',
   namespaced: true
 })
 export default class HostServerStore extends VuexModule implements HostServerState {
