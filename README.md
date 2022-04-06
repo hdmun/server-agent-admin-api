@@ -2,7 +2,16 @@
 
 [server-agent](https://github.com/hdmun/server-agent) 프로젝트에 맞춘 어드민 웹 어플리케이션 프로젝트 입니다.
 
+## Developments
+
+### VSCode Extentions
+
+- Vetur
+
+
 ## Dependency
+
+- NodeJS 14.17.6
 
 ### API Server
 

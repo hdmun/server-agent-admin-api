@@ -1,8 +1,9 @@
 import consola from 'consola'
 import axios from 'axios'
 import { Router, Request, Response, NextFunction } from 'express'
-import { getConnection, getRepository } from 'typeorm'
+import { DataSource } from 'typeorm'
 
+import { AppDataSource } from '../data-source'
 import { HostServer } from '../entity/HostServer'
 import { IHostServerInfo, IServersMonitoring } from '~/interface/HostServer'
 
@@ -27,7 +28,7 @@ export class HostController {
 
   async all(_req: Request, res: Response, _next: NextFunction) {
     try {
-      const servers = await getConnection().manager.find(HostServer);
+      const servers = await AppDataSource.manager.find(HostServer);
       res.status(200).json(servers)
     } catch (error) {
       consola.error(`${error}`)
@@ -39,13 +40,13 @@ export class HostController {
     try {
       const reqBody = req.body as IHostServerInfo
 
-      const hostServer = await getRepository(HostServer)
+      const hostServer = await AppDataSource.getRepository(HostServer)
         .createQueryBuilder('HostServer')
         .where('HostServer.HostName = :hostName', {hostName: reqBody.hostName})
         .getOne()
 
       // check undefined
-      if (hostServer === undefined) {
+      if (hostServer === null) {
         res.status(400).json({})
         return;
       }

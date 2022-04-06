@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { serverProcessStore } from '~/store'
+import { vxm } from '~/store'
 import { ServerProcessInfo } from '~/store/ServerProcess'
 import { IServerProcessInfo } from '~/interface/ServerProcess'
 import socket from '~/plugins/socket.io'
@@ -79,7 +79,7 @@ export default Vue.extend({
   },
   computed: {
     processes(): ServerProcessInfo[] {
-      return serverProcessStore.processByHost(this.hostname)
+      return vxm.process.processByHost(this.hostname)
     },
   },
   beforeDestroy() {
@@ -87,7 +87,7 @@ export default Vue.extend({
   },
   mounted() {
     socket.on('ServerInfo', this.onServerInfo)
-    serverProcessStore.loadProcess()
+    vxm.process.loadProcess()
   },
   methods: {
     aliveColor(isAlive: boolean) {
@@ -98,7 +98,7 @@ export default Vue.extend({
     },
     onServerInfo(message: string) {
       const serverInfo = JSON.parse(message) as IServerProcessInfo
-      serverProcessStore.onUpdate(serverInfo)
+      vxm.process.onUpdate(serverInfo)
     },
     onClickClose(item: ServerProcessInfo) {
       this.select.serverName = item.serverName
@@ -106,7 +106,7 @@ export default Vue.extend({
     },
     onKillCommand(command: string) {
       try {
-        serverProcessStore.killCommand({
+        vxm.process.killCommand({
           hostName: this.hostname,
           killCommand: command,
           serverName: this.select.serverName,

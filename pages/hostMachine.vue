@@ -86,7 +86,7 @@ import ProcessTable from '@/components/ProcessTable.vue'
 
 import { IHostServerInfo } from '~/interface/HostServer'
 import socket from '~/plugins/socket.io'
-import { hostServerStore } from '~/store'
+import { vxm } from '~/store'
 
 export default Vue.extend({
   components: {
@@ -118,14 +118,14 @@ export default Vue.extend({
   },
   computed: {
     hostServers() {
-      return hostServerStore.serverList
+      return vxm.host.serverList()
     },
     isAsk(): boolean {
       return this.dialog.selected !== undefined
     },
     isAliveHost() {
       return (hostName: string) => {
-        return hostServerStore.isAliveHost(hostName)
+        return vxm.host.isAliveHost(hostName)
       }
     },
   },
@@ -137,24 +137,24 @@ export default Vue.extend({
   mounted() {
     socket.on('HostInfo', this.onHostInfo)
 
-    hostServerStore.loadServers()
+    vxm.host.loadServers()
     this.timerHandle = window.setInterval(() => {
-      hostServerStore.updateHostStatus()
+      vxm.host.updateHostStatus()
     }, 1000)
   },
   methods: {
     onHostInfo(message: string) {
       const hostServer = JSON.parse(message) as IHostServerInfo
-      hostServerStore.onAliveAck(hostServer)
+      vxm.host.onAliveAck(hostServer)
     },
     colorForMonitoring(hostName: string) {
-      return hostServerStore.colorMonitoring(hostName)
+      return vxm.host.colorMonitoring(hostName)
     },
     textForMonitoring(hostInfo?: IHostServerInfo): string {
       return hostInfo?.monitoring ? 'ON' : 'OFF'
     },
     colorForAliveAck(hostName: string) {
-      return hostServerStore.colorAliveAck(hostName)
+      return vxm.host.colorAliveAck(hostName)
     },
     onShowConfirmMonitoring(selected: IHostServerInfo) {
       this.dialog.selected = {
@@ -176,7 +176,7 @@ export default Vue.extend({
 
       try {
         this.dialog.progress = true
-        await hostServerStore.setMonitoring(host)
+        await vxm.host.setMonitoring(host)
       }
       catch (error) {
         let message = ''

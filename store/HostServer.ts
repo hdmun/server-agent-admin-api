@@ -1,4 +1,4 @@
-import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators'
+import { createModule, getter, mutation, action } from 'vuex-class-component'
 
 import { diffPerSec } from '.'
 import { IHostServer, IHostServerInfo } from '~/interface/HostServer'
@@ -16,39 +16,32 @@ interface HostServerState {
   hostMap: {[key: string]: HostServerInfo}
 }
 
-
-@Module({
-  stateFactory: true,
-  name: 'HostServer',
-  namespaced: true
+const VuexModule = createModule({
+  namespaced: 'HostServer',
+  strict: false,
+  target: 'nuxt',
 })
 export default class HostServerStore extends VuexModule implements HostServerState {
   servers: HostServerInfo[] = []
   hostMap: {[key: string]: HostServerInfo} = {}
 
-  get serverList() {
+  @getter serverList() {
     return this.servers
   }
 
-  get colorMonitoring() {
-    return (hostName: string) => {
-      return this.hostMap[hostName]?.monitoring ? 'green' : 'gray'
-    }
+  @getter colorMonitoring(hostName: string) {
+    return this.hostMap[hostName]?.monitoring ? 'green' : 'gray'
   }
 
-  get colorAliveAck() {
-    return (hostName: string) => {
-      return this.hostMap[hostName]?.alive ? 'green' : 'red'
-    }
+  @getter colorAliveAck(hostName: string) {
+    return this.hostMap[hostName]?.alive ? 'green' : 'red'
   }
 
-  get isAliveHost() {
-    return (hostName: string) => {
-      return this.hostMap[hostName]?.alive ?? false
-    }
+  @getter isAliveHost(hostName: string) {
+    return this.hostMap[hostName]?.alive ?? false
   }
 
-  @Mutation
+  @mutation
   setServers(servers: HostServerInfo[]) {
     this.servers = servers
     for (const host of servers) {
@@ -57,7 +50,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     }
   }
 
-  @Mutation
+  @mutation
   updateMonitoring(server?: HostServerInfo) {
     if (server === undefined) {
       return
@@ -68,7 +61,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     this.servers = [...this.servers]
   }
 
-  @Mutation
+  @mutation
   onAliveAck(hostServer: IHostServerInfo) {
     const host = this.hostMap[hostServer.hostName]
     host.monitoring = hostServer.monitoring
@@ -76,7 +69,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     this.servers = [...this.servers]
   }
 
-  @Mutation
+  @mutation
   onUpdateAliveAck(host: HostServerInfo) {
     if (host.aliveAckTime === undefined) {
       return
@@ -98,29 +91,27 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     this.servers = [...this.servers]
   }
 
-  @Action({ commit: 'setServers' })
+  @action
   async loadServers() {
     const response = await $axios.get<IHostServer[]>(`/api/servers`)
-    const servers = response.data.map<HostServerInfo>((value) => {
+    this.servers = response.data.map<HostServerInfo>((value) => {
       return {
         hostName: value.hostName,
         ipAddr: value.ipAddr
       }
     })
-
-    return servers
   }
 
-  @Action({ commit: 'updateMonitoring' })
+  @action
   async setMonitoring(request: IHostServerInfo) {
     const response = await $axios.put<IHostServerInfo>(`/api/servers/monitoring`, request)
     return response.data
   }
 
 
-  @Action
-  updateHostStatus() {
-    for (const host of this.serverList) {
+  @action
+  async updateHostStatus() {
+    for (const host of this.serverList()) {
       this.onUpdateAliveAck(host)
     }
   }

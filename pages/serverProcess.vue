@@ -41,7 +41,7 @@ import KillCommandDialog from '@/components/KillCommandDialog.vue'
 
 import { IServerProcessInfo } from '~/interface/ServerProcess'
 import socket from '~/plugins/socket.io'
-import { serverProcessStore } from '~/store'
+import { vxm } from '~/store'
 import { ServerProcessInfo } from '~/store/ServerProcess'
 
 export default Vue.extend({
@@ -75,7 +75,7 @@ export default Vue.extend({
   },
   computed: {
     processes(): ServerProcessInfo[] {
-      return serverProcessStore.processAll
+      return vxm.process.processAll()
     },
   },
   beforeDestroy() {
@@ -83,12 +83,12 @@ export default Vue.extend({
   },
   mounted() {
     socket.on('ServerInfo', this.onServerInfo)
-    serverProcessStore.loadProcess()
+    vxm.process.loadProcess()
   },
   methods: {
     onServerInfo(message: string) {
       const serverInfo = JSON.parse(message) as IServerProcessInfo
-      serverProcessStore.onUpdate(serverInfo)
+      vxm.process.onUpdate(serverInfo)
     },
     aliveColor(isAlive: boolean) {
       return isAlive ? 'green' : 'red'
@@ -103,7 +103,7 @@ export default Vue.extend({
     },
     onKillCommand(command: string) {
       try {
-        serverProcessStore.killCommand({
+        vxm.process.killCommand({
           hostName: this.select.hostName,
           killCommand: command,
           serverName: this.select.serverName,

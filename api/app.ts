@@ -1,11 +1,10 @@
-import 'reflect-metadata'
 import * as http from 'http'
 import { Server } from 'socket.io'
 import express, { Express } from 'express'
 import consola from 'consola'
-import { createConnection } from 'typeorm'
 
 import { HostController, ProcessController } from './controller'
+import { AppDataSource } from './data-source'
 import { SubscribeService } from './service/pubsubService'
 
 export default class ServerApp {
@@ -50,7 +49,7 @@ export default class ServerApp {
 
   async setup() {
     try {
-      await createConnection()
+      await AppDataSource.initialize()
     } catch (error) {
       consola.error(error)
       throw error

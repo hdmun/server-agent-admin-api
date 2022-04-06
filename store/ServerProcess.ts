@@ -1,5 +1,5 @@
 import path from 'path'
-import { Module, VuexModule, MutationAction, Mutation, Action } from 'vuex-module-decorators'
+import { createModule, getter, mutation, action } from 'vuex-class-component'
 
 import { diffPerSec } from '.'
 import { IRequestProcessKill, IResponseProcessKill, IServerProcess, IServerProcessInfo } from '~/interface/ServerProcess'
@@ -29,26 +29,24 @@ interface ServerProcessState {
   listAll: ServerProcessInfo[]
 }
 
-@Module({
-  stateFactory: true,
-  name: 'ServerProcess',
-  namespaced: true
+const VuexModule = createModule({
+  namespaced: 'SeverProcess',
+  strict: false,
+  target: 'nuxt',
 })
 export default class ServerProcessStore extends VuexModule implements ServerProcessState {
   processDict: ProcessDictionary = {}
   listAll: ServerProcessInfo[] = []
 
-  get processByHost() {
-    return (hostName: string): ServerProcessInfo[] => {
-      return this.processDict[hostName]?.list ?? []
-    }
+  @getter processByHost(hostName: string): ServerProcessInfo[] {
+    return this.processDict[hostName]?.list ?? []
   }
 
-  get processAll() {
+  @getter processAll() {
     return this.listAll
   }
 
-  @MutationAction
+  @action
   async loadProcess() {
     const response = await $axios.get<IServerProcess[]>(`/api/process`)
 
@@ -79,10 +77,11 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
       })
       .flatMap(value => value)
 
-    return { processDict, listAll }
+    this.processDict = {...this.processDict}
+    this.listAll = [...this.listAll]
   }
 
-  @Mutation
+  @mutation
   onUpdate(serverInfo: IServerProcessInfo) {
     if (!(serverInfo.hostName in this.processDict)) {
       return
@@ -106,7 +105,7 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
     this.processDict = {...this.processDict}
   }
 
-  @Action
+  @action
   async killCommand(request: IRequestProcessKill) {
     await $axios.put<IResponseProcessKill[]>(`/api/process/kill`, request)
     // 응답 받은 데이터로 상태를 바로 변경해주는게 나을까?
