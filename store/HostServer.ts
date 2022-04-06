@@ -1,4 +1,4 @@
-import { createModule, getter, mutation, action } from 'vuex-class-component'
+import { createModule, mutation, action } from 'vuex-class-component'
 
 import { diffPerSec } from '.'
 import { IHostServer, IHostServerInfo } from '~/interface/HostServer'
@@ -25,20 +25,26 @@ export default class HostServerStore extends VuexModule implements HostServerSta
   servers: HostServerInfo[] = []
   hostMap: {[key: string]: HostServerInfo} = {}
 
-  @getter serverList() {
+  get serverList() {
     return this.servers
   }
 
-  @getter colorMonitoring(hostName: string) {
-    return this.hostMap[hostName]?.monitoring ? 'green' : 'gray'
+  get colorMonitoring() {
+    return (hostName: string) => {
+      return this.hostMap[hostName]?.monitoring ? 'green' : 'gray'
+    }
   }
 
-  @getter colorAliveAck(hostName: string) {
-    return this.hostMap[hostName]?.alive ? 'green' : 'red'
+  get colorAliveAck() {
+    return (hostName: string) => {
+      return this.hostMap[hostName]?.alive ? 'green' : 'red'
+    }
   }
 
-  @getter isAliveHost(hostName: string) {
-    return this.hostMap[hostName]?.alive ?? false
+  get isAliveHost() {
+    return (hostName: string) => {
+      return this.hostMap[hostName]?.alive ?? false
+    }
   }
 
   @mutation
@@ -51,7 +57,7 @@ export default class HostServerStore extends VuexModule implements HostServerSta
   }
 
   @mutation
-  updateMonitoring(server?: HostServerInfo) {
+  updateMonitoring(server?: IHostServerInfo) {
     if (server === undefined) {
       return
     }
@@ -94,24 +100,26 @@ export default class HostServerStore extends VuexModule implements HostServerSta
   @action
   async loadServers() {
     const response = await $axios.get<IHostServer[]>(`/api/servers`)
-    this.servers = response.data.map<HostServerInfo>((value) => {
+    const servers = response.data.map<HostServerInfo>((value) => {
       return {
         hostName: value.hostName,
         ipAddr: value.ipAddr
       }
     })
+
+    this.setServers(servers)
   }
 
   @action
   async setMonitoring(request: IHostServerInfo) {
     const response = await $axios.put<IHostServerInfo>(`/api/servers/monitoring`, request)
-    return response.data
+    this.updateMonitoring(response.data)
   }
 
 
   @action
   async updateHostStatus() {
-    for (const host of this.serverList()) {
+    for (const host of this.servers) {
       this.onUpdateAliveAck(host)
     }
   }

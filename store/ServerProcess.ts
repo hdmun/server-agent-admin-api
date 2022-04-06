@@ -38,11 +38,13 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
   processDict: ProcessDictionary = {}
   listAll: ServerProcessInfo[] = []
 
-  @getter processByHost(hostName: string): ServerProcessInfo[] {
-    return this.processDict[hostName]?.list ?? []
+  get processByHost() {
+    return (hostName: string): ServerProcessInfo[] => {
+      return this.processDict[hostName]?.list ?? []
+    }
   }
 
-  @getter processAll() {
+  get processAll() {
     return this.listAll
   }
 

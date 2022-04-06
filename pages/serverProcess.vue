@@ -75,7 +75,7 @@ export default Vue.extend({
   },
   computed: {
     processes(): ServerProcessInfo[] {
-      return vxm.process.processAll()
+      return vxm.process.processAll
     },
   },
   beforeDestroy() {

@@ -118,7 +118,7 @@ export default Vue.extend({
   },
   computed: {
     hostServers() {
-      return vxm.host.serverList()
+      return vxm.host.serverList
     },
     isAsk(): boolean {
       return this.dialog.selected !== undefined
