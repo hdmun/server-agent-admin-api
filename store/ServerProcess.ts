@@ -79,8 +79,8 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
       })
       .flatMap(value => value)
 
-    this.processDict = {...this.processDict}
-    this.listAll = [...this.listAll]
+    this.processDict = processDict
+    this.listAll = listAll
   }
 
   @mutation
@@ -105,6 +105,7 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
     process.alive = serverInfo.alive
 
     this.processDict = {...this.processDict}
+    this.listAll = [...this.listAll]
   }
 
   @action
