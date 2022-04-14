@@ -99,9 +99,7 @@ export default class ServerProcessStore extends VuexModule implements ServerProc
     process.threadId = serverInfo.threadId
 
     const diffSec = diffPerSec(new Date(serverInfo.lastReceiveTime), new Date())
-    if (process.processingTime > 0) {
-      process.receiveTime = `${diffSec} 초 전`
-    }
+    process.receiveTime = `${diffSec} 초 전`
     process.alive = serverInfo.alive
 
     this.processDict = {...this.processDict}
