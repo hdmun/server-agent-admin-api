@@ -25,9 +25,10 @@ export default class ServerApp {
     this.app = express()
     this.app.use(express.json())
 
-    const config = require('./config.json')
-    this.host = config.host
-    this.port = config.port
+    const nuxtConfig = require('../nuxt.config').default
+    // this.host = 'localhost'
+    this.host = nuxtConfig.server.host
+    this.port = nuxtConfig.server.expressPort
 
     this.httpServer = http.createServer(this.app)
     this.hostController = new HostController()
@@ -35,7 +36,7 @@ export default class ServerApp {
 
     this.sockio = new Server(this.httpServer, {
       cors: {
-        origin: "http://localhost:3000"
+        origin: `http://${nuxtConfig.server.host}:${nuxtConfig.server.port}`
       }
     })
     this.pubsubService = new SubscribeService(this.sockio)
