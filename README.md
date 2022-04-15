@@ -8,10 +8,10 @@
 
 - Vetur
 
-
 ## Dependency
 
 - NodeJS 14.17.6
+- npm 8.6.0
 
 ### API Server
 
