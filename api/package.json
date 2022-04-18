@@ -1,0 +1,40 @@
+{
+  "name": "server-agent-admin",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon index.ts --watch .",
+    "build": "tsc",
+    "start": "cross-env NODE_ENV=production nuxt start",
+    "lint:js": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore .",
+    "lint:prettier": "prettier --check .",
+    "lint": "npm run lint:js && npm run lint:prettier",
+    "lintfix": "prettier --write --list-different . && npm run lint:js -- --fix",
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^0.26.1",
+    "consola": "^2.15.3",
+    "cross-env": "^7.0.3",
+    "express": "^4.17.3",
+    "mssql": "^6.3.1",
+    "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.4.1",
+    "ts-node": "^10.7.0",
+    "typeorm": "^0.3.4",
+    "zeromq": "^5.2.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/mssql": "^7.1.5",
+    "@types/node": "^17.0.21",
+    "@types/zeromq": "^5.2.1",
+    "babel-core": "7.0.0-bridge.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "jest": "^27.4.4",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.1"
+  }
+}

@@ -84,9 +84,9 @@ import ErrorSnackBar from '@/components/ErrorSnackBar.vue'
 import LoadingDialog from '@/components/LoadingDialog.vue'
 import ProcessTable from '@/components/ProcessTable.vue'
 
+import socket from '@/plugins/socket.io'
+import { vxm } from '@/store'
 import { IHostServerInfo } from '~/interface/HostServer'
-import socket from '~/plugins/socket.io'
-import { vxm } from '~/store'
 
 export default Vue.extend({
   components: {

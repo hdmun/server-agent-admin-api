@@ -9,6 +9,6 @@
         "encrypt": false
     },
     "entities": [
-        "api/entity/*.ts"
+        "./entity/*.ts"
     ]
 }

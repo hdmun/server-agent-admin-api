@@ -1,9 +1,9 @@
 import path from 'path'
-import { createModule, getter, mutation, action } from 'vuex-class-component'
+import { createModule, mutation, action } from 'vuex-class-component'
 
 import { diffPerSec } from '.'
 import { IRequestProcessKill, IResponseProcessKill, IServerProcess, IServerProcessInfo } from '~/interface/ServerProcess'
-import { $axios } from '~/utils/axios'
+import { $axios } from '@/utils/axios'
 
 export interface ServerProcessInfo {
   hostName: string

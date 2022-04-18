@@ -1,6 +1,11 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
+  server: {
+    port: 3000,
+    host: 'localhost'
+  },
+
   telemetry: false,
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   // ssr: false,
@@ -26,7 +31,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '~/plugins/axios-accessor'
+    '@/plugins/axios-accessor'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -94,13 +99,6 @@ export default {
       vue: {
         compiler: require('vue-template-babel-compiler')
       }
-    },
-  },
-  server: {
-    host: 'localhost',
-    port: 3000,
-    expressPort: 3001,
-    agentHttpPort: 54321,
-    agentSubPort: 12345
+    }
   }
 }

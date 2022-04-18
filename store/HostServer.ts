@@ -1,8 +1,9 @@
 import { createModule, mutation, action } from 'vuex-class-component'
 
 import { diffPerSec } from '.'
+
 import { IHostServer, IHostServerInfo } from '~/interface/HostServer'
-import { $axios } from '~/utils/axios'
+import { $axios } from '@/utils/axios'
 
 export interface HostServerInfo extends IHostServer {
   monitoring?: boolean
@@ -115,7 +116,6 @@ export default class HostServerStore extends VuexModule implements HostServerSta
     const response = await $axios.put<IHostServerInfo>(`/api/servers/monitoring`, request)
     this.updateMonitoring(response.data)
   }
-
 
   @action
   async updateHostStatus() {

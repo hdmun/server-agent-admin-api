@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { DataSource } from 'typeorm'
 
-import ormconfig from '../ormconfig.json'
+import ormconfig from './ormconfig.json'
 
 export const AppDataSource = new DataSource({
   type: 'mssql',

@@ -56,10 +56,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { vxm } from '~/store'
-import { ServerProcessInfo } from '~/store/ServerProcess'
+import { vxm } from '@/store'
+import { ServerProcessInfo } from '@/store/ServerProcess'
+import socket from '@/plugins/socket.io'
 import { IServerProcessInfo } from '~/interface/ServerProcess'
-import socket from '~/plugins/socket.io'
 
 export default Vue.extend({
   props: {

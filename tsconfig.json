@@ -1,23 +1,17 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
-    "moduleResolution": "Node",
     "lib": ["ESNext", "ESNext.AsyncIterable", "DOM"],
-    "esModuleInterop": true,
-    "allowJs": true,
-    "sourceMap": true,
-    "strict": true,
-    "noEmit": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./*"],
+      "~/*": ["./interface/*"],
       "@/*": ["./*"]
+      
     },
     "types": ["@nuxt/types", "@nuxtjs/axios", "@types/node"]
   },
-  "exclude": ["node_modules", ".nuxt", "dist"]
+  "include": [
+    "./interface/*"
+  ],
+  "exclude": ["node_modules", ".nuxt", "dist", "api"]
 }

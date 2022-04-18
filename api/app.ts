@@ -27,22 +27,18 @@ export default class ServerApp {
     this.app = express()
     this.app.use(express.json())
 
-    const nuxtConfig = require('../nuxt.config').default
+    const config = require('./config.json')
     // this.host = 'localhost'
-    this.host = nuxtConfig.server.host
-    this.port = nuxtConfig.server.expressPort
-    this.subscribePort = nuxtConfig.server.agentSubPort
-    this.axiosPort = nuxtConfig.server.agentHttpPort
+    this.host = config.listen.host
+    this.port = config.listen.port
+    this.subscribePort = config.connect.agentSubPort
+    this.axiosPort = config.connect.agentHttpPort
 
     this.httpServer = http.createServer(this.app)
     this.hostController = new HostController(this.axiosPort)
     this.processController = new ProcessController(this.axiosPort)
 
-    this.sockio = new Server(this.httpServer, {
-      cors: {
-        origin: `http://${nuxtConfig.server.host}:${nuxtConfig.server.port}`
-      }
-    })
+    this.sockio = new Server(this.httpServer, config.socketio)
     this.pubsubService = new SubscribeService(this.sockio)
   }
 
@@ -65,7 +61,7 @@ export default class ServerApp {
   }
 
   listen() {
-    this.httpServer.listen(this.port, this.host, () => {
+    this.httpServer.listen(this.port, () => {
       consola.log(`ServerApp listening on the port ${this.port}`)
     })
 
