@@ -2,8 +2,12 @@ import consola from 'consola'
 import { Server } from 'socket.io'
 import * as zmq from 'zeromq'
 
+import { AppDataSource } from '../data-source'
+import { HostServer } from '../entity/HostServer'
+
 export class SubscribeService {
   subSock: zmq.Socket
+
   sockio: Server
   topics: string[]
 
@@ -13,8 +17,11 @@ export class SubscribeService {
     this.topics = ['HostInfo', 'ServerInfo']
   }
 
-  subscribe() {
-    this.subSock.connect(`tcp://localhost:12345`)
+  async subscribe(port: number) {
+    const servers = await AppDataSource.manager.find(HostServer);
+    for (const server of servers) {
+      this.subSock.connect(`tcp://${server.ipAddr}:${port}`)
+    }
 
     for (const topic of this.topics) {
       this.subSock.subscribe(topic)
@@ -28,8 +35,8 @@ export class SubscribeService {
     })
   }
 
-  start() {
-    this.subscribe()
+  async start(port: number) {
+    await this.subscribe(port)
     consola.info(`start PubSubService`)
   }
 }

@@ -12,6 +12,8 @@ export default class ServerApp {
   config: any
   nuxt: any
   port: number
+  subscribePort: number
+  axiosPort: number
   host: string
 
   httpServer: http.Server
@@ -29,10 +31,12 @@ export default class ServerApp {
     // this.host = 'localhost'
     this.host = nuxtConfig.server.host
     this.port = nuxtConfig.server.expressPort
+    this.subscribePort = nuxtConfig.server.subscribePort
+    this.axiosPort = nuxtConfig.server.agentPort
 
     this.httpServer = http.createServer(this.app)
-    this.hostController = new HostController()
-    this.processController = new ProcessController()
+    this.hostController = new HostController(this.axiosPort)
+    this.processController = new ProcessController(this.axiosPort)
 
     this.sockio = new Server(this.httpServer, {
       cors: {
@@ -73,8 +77,8 @@ export default class ServerApp {
 
   async start() {
     await this.setup()
-    this.listen()
+    await this.pubsubService.start(this.subscribePort)
 
-    this.pubsubService.start()
+    this.listen()
   }
 }

@@ -1,7 +1,6 @@
 import consola from 'consola'
 import axios from 'axios'
 import { Router, Request, Response, NextFunction } from 'express'
-import { DataSource } from 'typeorm'
 
 import { AppDataSource } from '../data-source'
 import { HostServer } from '../entity/HostServer'
@@ -19,14 +18,16 @@ const async_ = (asyncFn: Function) => {
 
 export class HostController {
   router: Router
+  port: number
 
-  constructor() {
+  constructor(port: number) {
     this.router = Router()
     this.router.get('/servers', async_(this.all))
     this.router.put('/servers/monitoring', async_(this.monitoring))
+    this.port = port
   }
 
-  async all(_req: Request, res: Response, _next: NextFunction) {
+  private all = async (_req: Request, res: Response, _next: NextFunction) => {
     try {
       const servers = await AppDataSource.manager.find(HostServer);
       res.status(200).json(servers)
@@ -36,7 +37,7 @@ export class HostController {
     }
   }
 
-  async monitoring(req: Request, res: Response, _next: NextFunction) {
+  private monitoring = async (req: Request, res: Response, _next: NextFunction) => {
     try {
       const reqBody = req.body as IHostServerInfo
 
@@ -52,7 +53,7 @@ export class HostController {
       }
 
       const response = await axios.put<IServersMonitoring>(
-        `http://${hostServer?.ipAddr}/server/monitoring`, {
+        `http://${hostServer.ipAddr}:${this.port}/server/monitoring`, {
           hostName: hostServer.hostName,
           on: reqBody.monitoring
         })

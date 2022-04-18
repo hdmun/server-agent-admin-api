@@ -12,14 +12,16 @@ import { IRequestProcessKill, IResponseProcessKill } from '~/interface/ServerPro
 
 export class ProcessController {
   router: Router
+  port: number
 
-  constructor() {
+  constructor(port: number) {
     this.router = Router()
     this.router.get('/process', asyncWrap(this.all))
     this.router.put('/process/kill', asyncWrap(this.kill))
+    this.port = port
   }
 
-  async all(_req: Request, res: Response, _nex: NextFunction) {
+  private all = async (_req: Request, res: Response, _nex: NextFunction) => {
     try {
       const serverProcess = await AppDataSource.getRepository(ServerProcess).find()
       res.status(200).json(serverProcess)
@@ -29,7 +31,7 @@ export class ProcessController {
     }
   }
 
-  async kill(req: Request, res: Response, _nex: NextFunction) {
+  private kill = async (req: Request, res: Response, _nex: NextFunction) => {
     try {
       const reqBody = req.body as IRequestProcessKill
 
@@ -58,7 +60,7 @@ export class ProcessController {
       }
 
       const response = await axios.put<IResponseProcessKill>(
-        `http://${hostServer.ipAddr}/server/process/kill`, {
+        `http://${hostServer.ipAddr}:${this.port}/process/kill`, {
           killCommand: reqBody.killCommand,
           serverName: reqBody.serverName,
         })
