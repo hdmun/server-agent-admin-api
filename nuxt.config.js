@@ -100,7 +100,7 @@ export default {
     host: 'localhost',
     port: 3000,
     expressPort: 3001,
-    agentPort: 54321,
-    subscribePort: 12345
+    agentHttpPort: 54321,
+    agentSubPort: 12345
   }
 }

@@ -31,8 +31,8 @@ export default class ServerApp {
     // this.host = 'localhost'
     this.host = nuxtConfig.server.host
     this.port = nuxtConfig.server.expressPort
-    this.subscribePort = nuxtConfig.server.subscribePort
-    this.axiosPort = nuxtConfig.server.agentPort
+    this.subscribePort = nuxtConfig.server.agentSubPort
+    this.axiosPort = nuxtConfig.server.agentHttpPort
 
     this.httpServer = http.createServer(this.app)
     this.hostController = new HostController(this.axiosPort)
