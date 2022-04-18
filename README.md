@@ -53,6 +53,49 @@
 
 UI 프레임워크는 `vuetify` 기반으로 개발되었습니다.
 
+
+# Deploy for offline
+
+패키지를 오프라인 상태로 배포하는 방법.
+
+## .yarnrc 설정
+
+```
+yarn-offline-mirror "./npm-packages-offline-cache"
+yarn-offline-mirror-pruning true
+```
+
+## Script
+
+### Online Host
+
+```
+DEL /q /s npm-packages-offline-cache
+RMDIR /q /s npm-packages-offline-cache
+DEL /q yarn.lock
+yarn cache clean
+
+yarn install
+
+SET _7ZIP="C:\Program Files\7-Zip\7z.exe"
+%_7ZIP% a -bd -bso0 -bsp0 "npm-packages-offline-cache.zip" "./npm-packages-offline-cache"
+```
+
+`npm-packages-offline-cache.zip` 파일 배포.
+
+### Offline Host
+
+배포된 `npm-packages-offline-cache.zip` 파일 폴더에 압축 해제 후 설치.
+
+```
+SET _7ZIP="C:\Program Files\7-Zip\7z.exe"
+%_7ZIP% x -y npm-packages-offline-cache.zip -o./
+
+node yarn-1.22.18.js install --offline --production
+yarn install --offline
+```
+
+
 ## Build Setup
 
 ```bash
