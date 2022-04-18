@@ -11,8 +11,8 @@ import { IRequestProcessKill, IResponseProcessKill } from '~/interface/ServerPro
 
 
 export class ProcessController {
-  router: Router
-  port: number
+  readonly router: Router
+  readonly port: number
 
   constructor(port: number) {
     this.router = Router()

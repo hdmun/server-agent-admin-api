@@ -17,8 +17,8 @@ const async_ = (asyncFn: Function) => {
 }
 
 export class HostController {
-  router: Router
-  port: number
+  readonly router: Router
+  readonly port: number
 
   constructor(port: number) {
     this.router = Router()
