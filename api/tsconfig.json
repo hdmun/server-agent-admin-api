@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ESNext", "ESNext.AsyncIterable", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./interface/*"],
+      "@/*": ["./*"]
+      
+    },
+    "types": ["@nuxt/types", "@nuxtjs/axios", "@types/node"]
+  },
+  "include": [
+    "./interface/*"
+  ],
+  "exclude": ["node_modules", ".nuxt", "dist", "api"]
+}

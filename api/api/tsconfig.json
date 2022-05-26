@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
+    "paths": {
+      "~/*": ["./*"],
+      "~/interface/*": ["../interface/*"]
+    },
+    "types": ["@types/node", "@types/express"]
+  },
+  "include": [
+    "**/*",
+    "../interface/*"
+  ],
+  "exclude": ["node_modules"]
+}
