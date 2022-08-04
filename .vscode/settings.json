@@ -2,5 +2,11 @@
     "files.exclude": {
         "**/node_modules": true,
         "**/dist": true
-    }
+    },
+    "[vue]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "Vue.volar"
+    },
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
 }

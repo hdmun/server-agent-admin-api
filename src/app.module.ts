@@ -5,9 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SqlServerConfigModule } from './config/database/config.module';
 import { SqlServerConfigService } from './config/database/config.service';
-import { HostServer } from './host/entity/host-server.entity';
-import { HostController } from './host/host.controller';
-import { HostService } from './host/host.service';
+import { HostModule } from './host/host.module';
+import { ServerModule } from './server/server.module';
 
 @Module({
   imports: [
@@ -17,9 +16,10 @@ import { HostService } from './host/host.service';
       useClass: SqlServerConfigService,
       inject: [SqlServerConfigService],
     }),
-    TypeOrmModule.forFeature([HostServer])
+    HostModule,
+    ServerModule,
   ],
-  controllers: [AppController, HostController],
-  providers: [AppService, HostService],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

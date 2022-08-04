@@ -1,33 +1,33 @@
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AgentRepository } from '~/agent/agent.repository';
-import { HostController } from './host.controller';
 import { HostServerRepository } from './host.repository';
 import { HostService } from './host.service';
 
-describe('HostController', () => {
-  let hostController: HostController;
+
+describe('HostService Test', () => {
   let hostService: HostService;
+  let hostRepository: HostServerRepository
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [HostController],
       imports: [HttpModule],
       providers: [HostService, HostServerRepository, AgentRepository],
     }).compile();
 
-    hostController = app.get<HostController>(HostController);
     hostService = app.get<HostService>(HostService);
+    hostRepository = app.get<HostServerRepository>(HostServerRepository);
   });
 
   describe('getHosts', () => {
     it('should return an array of hosts', async () => {
       const hosts = [{ hostName: 'TestHost', ipAddr: 'localhost' }];
-      jest.spyOn(hostService, 'getHosts')
-        .mockImplementation(async () => hosts);
+      jest.spyOn(hostRepository, 'find')
+        .mockResolvedValue(hosts);
 
-      const result = await hostController.getHosts()
-      expect(result).toBe(hosts);
+      const result = await hostService.getHosts()
+
+      expect(result).toEqual(hosts);
     });
   });
 });
