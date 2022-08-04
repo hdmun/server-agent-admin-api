@@ -1,4 +1,10 @@
 
+export interface ServerProcessResponse {
+  hostName: string
+  serverName: string
+  processName: string
+}
+
 export interface ServerProcessKillRequest {
   killCommand: string
   serverName: string
