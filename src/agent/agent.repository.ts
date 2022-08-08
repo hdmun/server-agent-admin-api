@@ -12,6 +12,18 @@ export class AgentRepository {
     private readonly httpService: HttpService
   ) { }
 
+  async isAlive(address: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`http://${address}:${this.port}/`, { timeout: 500 }))
+      if (response.status === 200)
+        return true
+    }
+    catch { }
+
+    return false
+  }
+
   async updateMonitoring(address: string, dto: ServerMonitoringRequest) {
     const url = `http://${address}:${this.port}/monitoring`
     const response = await firstValueFrom(
@@ -25,7 +37,7 @@ export class AgentRepository {
   async killServer(address: string, dto: ServerProcessKillRequest) {
     // `kill`을 없애고
     // 리소스 경로 추가한 다음에 delete 요청을 해야하나?
-    const url = `http://${address}:${this.port}/server/process/kill`
+    const url = `http://${address}:${this.port}/process/kill`
     const response = await firstValueFrom(
       this.httpService.put<ServerProcessKillResponse>(url, dto))
     if (response.status === 201)

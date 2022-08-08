@@ -12,7 +12,11 @@ export class HostService {
   ) { }
 
   async getHosts(): Promise<HostServer[]> {
-    return this.hostRepository.find()
+    const hosts = await this.hostRepository.find()
+    for (const host of hosts) {
+      host.alive = await this.agentRepository.isAlive(host.ipAddr)
+    }
+    return hosts
   }
 
   async getHost(hostName: string): Promise<HostServer> {

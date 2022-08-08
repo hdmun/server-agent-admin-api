@@ -7,4 +7,6 @@ export class HostServer {
 
   @Column({ length: 15, name: 'IPAddr' })
   ipAddr: string = ''
+
+  alive: boolean = false
 }
