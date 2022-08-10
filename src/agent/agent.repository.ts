@@ -2,7 +2,7 @@ import { HttpService } from "@nestjs/axios"
 import { Injectable } from "@nestjs/common"
 import { firstValueFrom } from "rxjs"
 import { ServerMonitoringRequest, ServerMonitoringResponse } from "~/dto/monitoring"
-import { ServerProcessKillRequest, ServerProcessKillResponse } from "~/dto/server"
+import { ServerProcessKillRequest, ServerProcessKillResponse, ServerProcessState } from "~/dto/server"
 
 @Injectable()
 export class AgentRepository {
@@ -22,6 +22,16 @@ export class AgentRepository {
     catch { }
 
     return false
+  }
+
+  async getProcessState(address: string, serverName: string) {
+    const url = `http://${address}:${this.port}/process/${serverName}`
+    const response = await firstValueFrom(
+      this.httpService.get<ServerProcessState>(url))
+    if (response.status === 200)
+      return response.data
+
+    return null
   }
 
   async updateMonitoring(address: string, dto: ServerMonitoringRequest) {

@@ -1,5 +1,4 @@
 import { Controller, Get, Param, Delete, HttpStatus, HttpException } from '@nestjs/common';
-import * as path from 'path';
 import { ServerProcessResponse } from '~/dto/server';
 import { ServerService } from './server.service';
 
@@ -11,14 +10,7 @@ export class ServerController {
 
   @Get()
   async getServers(): Promise<ServerProcessResponse[]> {
-    const servers = await this.serverService.getServers();
-    return servers.map<ServerProcessResponse>((value) => {
-      return {
-        hostName: value.hostName,
-        serverName: value.serverName,
-        processName: path.basename(value.binaryPath)
-      }
-    })
+    return await this.serverService.getServers();
   }
 
   @Delete('/:hostName/:serverName/:command')
