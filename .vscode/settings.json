@@ -1,16 +1,12 @@
 {
     "files.exclude": {
-        "**/.nuxt": true,
-        "**/dist": true,
-        "**/node_modules": true
+        "**/node_modules": true,
+        "**/dist": true
     },
     "[vue]": {
-        "editor.defaultFormatter": "octref.vetur"
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "Vue.volar"
     },
-    "prettier.singleQuote": true,
-    "prettier.enable": false,
-    "emmet.includeLanguages": {
-        "vue-html": "html",
-        "vue": "html"
-    },
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
 }
