@@ -42,9 +42,12 @@ export class ServerService {
   }
 
   async getServer(hostName: string, serverName: string) {
-    return await this.serverRepository.findOneBy({
-      hostName,
-      serverName
+    return await this.serverRepository.findOne({
+      where: {
+        serverName,
+        hostName
+      },
+      relations: ['hostServer']
     })
   }
 

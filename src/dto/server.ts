@@ -19,8 +19,13 @@ export interface ServerProcessKillRequest {
   serverName: string
 }
 
-export interface ServerProcessKillResponse {
+// 네이밍이 싹다 마음에 안드네 이거
+interface ServerProcessKillResult {
   serverName: string
   exitCode: number
   close: boolean
+}
+
+export interface ServerProcessKillResponse {
+  servers: ServerProcessKillResult[]
 }
