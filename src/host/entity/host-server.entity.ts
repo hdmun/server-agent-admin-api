@@ -9,4 +9,5 @@ export class HostServer {
   ipAddr: string = ''
 
   alive: boolean = false
+  monitoring: boolean = false
 }

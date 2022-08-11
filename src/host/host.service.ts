@@ -16,7 +16,9 @@ export class HostService {
     return Promise.all<Promise<HostServer>>(
       hosts.map(async (host) => {
         try {
-          host.alive = await this.agentRepository.isAlive(host.ipAddr)
+          const hostState = await this.agentRepository.getHostState(host.ipAddr)
+          host.monitoring = hostState.monitoring
+          host.alive = hostState.alive
         }
         catch { }
 

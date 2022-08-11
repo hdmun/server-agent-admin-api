@@ -22,7 +22,7 @@ describe('HostController', () => {
 
   describe('getHosts', () => {
     it('should return an array of hosts', async () => {
-      const hosts = [{ hostName: 'TestHost', ipAddr: 'localhost', alive: false }];
+      const hosts = [{ hostName: 'TestHost', ipAddr: 'localhost', alive: false, monitoring: false }];
       jest.spyOn(hostService, 'getHosts')
         .mockImplementation(async () => hosts);
 

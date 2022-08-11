@@ -1,3 +1,12 @@
+export interface HostStateResponse {
+  on: boolean
+}
+
+export interface HostStateDto {
+  monitoring: boolean
+  alive: boolean
+}
+
 export interface SetMonitoringRequest {
   on: boolean
 }

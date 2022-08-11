@@ -1,7 +1,7 @@
 import { HttpService } from "@nestjs/axios"
 import { Injectable } from "@nestjs/common"
 import { firstValueFrom } from "rxjs"
-import { ServerMonitoringRequest, ServerMonitoringResponse } from "~/dto/monitoring"
+import { HostStateDto, HostStateResponse, ServerMonitoringRequest, ServerMonitoringResponse } from "~/dto/monitoring"
 import { ServerProcessKillRequest, ServerProcessKillResponse, ServerProcessState } from "~/dto/server"
 
 @Injectable()
@@ -12,16 +12,16 @@ export class AgentRepository {
     private readonly httpService: HttpService
   ) { }
 
-  async isAlive(address: string) {
+  async getHostState(address: string): Promise<HostStateDto> {
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`http://${address}:${this.port}/`, { timeout: 500 }))
+        this.httpService.get<HostStateResponse>(`http://${address}:${this.port}/`))
       if (response.status === 200)
-        return true
+        return { monitoring: response.data.on, alive: true }
     }
     catch { }
 
-    return false
+    return { monitoring: false, alive: false }
   }
 
   async getProcessState(address: string, serverName: string) {
