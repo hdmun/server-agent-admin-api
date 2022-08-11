@@ -48,7 +48,7 @@ export class ServerService {
     })
   }
 
-  async deleteServer(address: string, dto: ServerProcessKillRequest) {
+  async killServer(address: string, dto: ServerProcessKillRequest) {
     return await this.agentRepository.killServer(address, dto)
   }
 }

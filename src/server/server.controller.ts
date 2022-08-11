@@ -27,7 +27,7 @@ export class ServerController {
 
       // todo: validate param
 
-      return await this.serverService.deleteServer(server.hostServer.ipAddr, {
+      return await this.serverService.killServer(server.hostServer.ipAddr, {
         killCommand: command,
         serverName
       })
