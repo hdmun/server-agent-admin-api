@@ -45,12 +45,10 @@ export class AgentRepository {
   }
 
   async killServer(address: string, dto: ServerProcessKillRequest) {
-    // `kill`을 없애고
-    // 리소스 경로 추가한 다음에 delete 요청을 해야하나?
-    const url = `http://${address}:${this.port}/process/kill`
+    const url = `http://${address}:${this.port}/process/${dto.serverName}/${dto.killCommand}`
     const response = await firstValueFrom(
-      this.httpService.put<ServerProcessKillResponse>(url, dto))
-    if (response.status === 201)
+      this.httpService.delete<ServerProcessKillResponse>(url))
+    if (response.status === 200)
       return response.data
 
     return null
