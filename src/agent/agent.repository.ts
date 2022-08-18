@@ -1,5 +1,6 @@
+import axios from "axios"
 import { HttpService } from "@nestjs/axios"
-import { Injectable } from "@nestjs/common"
+import { Injectable, Logger } from "@nestjs/common"
 import { firstValueFrom } from "rxjs"
 import { HostStateDto, HostStateResponse, ServerMonitoringRequest, ServerMonitoringResponse } from "~/dto/monitoring"
 import { ServerProcessKillRequest, ServerProcessKillResponse, ServerProcessState } from "~/dto/server"
@@ -7,6 +8,7 @@ import { ServerProcessKillRequest, ServerProcessKillResponse, ServerProcessState
 @Injectable()
 export class AgentRepository {
   private readonly port = '3032'
+  private readonly logger = new Logger(AgentRepository.name);
 
   constructor(
     private readonly httpService: HttpService
@@ -17,9 +19,19 @@ export class AgentRepository {
       const response = await firstValueFrom(
         this.httpService.get<HostStateResponse>(`http://${address}:${this.port}/`))
       if (response.status === 200)
+      if (response.status === 200) {
         return { monitoring: response.data.on, alive: true }
+      }
+      this.logger.error(`failed to request 'getHostState' ${response.headers}`)
     }
-    catch { }
+    catch (error) {
+      if (axios.isAxiosError(error)) {
+        const response = error.response
+        this.logger.error(`exception to request 'getHostState' ${error}`, response.headers)
+      } else {
+        this.logger.error(error)
+      }
+    }
 
     return { monitoring: false, alive: false }
   }
