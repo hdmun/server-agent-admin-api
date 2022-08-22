@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import axios from 'axios'
+import { Injectable, Logger } from '@nestjs/common';
 import * as path from 'path';
 import { AgentRepository } from '~/agent/agent.repository';
 import { ServerProcessKillRequest, ServerProcessResponse } from '~/dto/server';
@@ -6,6 +7,8 @@ import { ServerProcessRepository } from './server.repository';
 
 @Injectable()
 export class ServerService {
+  private readonly logger = new Logger(ServerService.name);
+
   constructor(
     private readonly serverRepository: ServerProcessRepository,
     private readonly agentRepository: AgentRepository
@@ -14,21 +17,10 @@ export class ServerService {
   async getServers(): Promise<ServerProcessResponse[]> {
     const servers = await this.serverRepository.find({ relations: ['hostServer'] })
     return Promise.all<Promise<ServerProcessResponse>>(
-      servers.map(async (server) => {
-        try {
-          const state = await this.agentRepository.getProcessState(server.hostServer.ipAddr, server.hostName, server.serverName)
-          if (state) {
-            return {
-              hostName: server.hostName,
-              serverName: server.serverName,
-              processName: path.basename(server.binaryPath),
-              threadId: state.threadId,
-              processingTime: state.processingTime,
-              receiveTime: state.receiveTime
-            }
-          }
-        } catch (error) {
-          return {
+      servers
+        .filter((value) => value.hostServer !== null)
+        .map(async (server) => {
+          const process: ServerProcessResponse = {
             hostName: server.hostName,
             serverName: server.serverName,
             processName: path.basename(server.binaryPath),
@@ -36,8 +28,22 @@ export class ServerService {
             processingTime: 0,
             receiveTime: ''
           }
-        }
-      })
+          try {
+            const state = await this.agentRepository.getProcessState(server.hostServer.ipAddr, server.hostName, server.serverName)
+            if (state) {
+              process.threadId = state.threadId
+              process.processingTime = state.processingTime
+              process.receiveTime = state.receiveTime
+              return process
+            }
+          } catch (error) {
+            if (!axios.isAxiosError(error)) {
+              this.logger.error(error)
+            }
+          }
+
+          return process
+        })
     )
   }
 

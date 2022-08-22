@@ -4,7 +4,7 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm'
 
 @Injectable()
 export class SqlServerConfigService implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService) { }
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
@@ -15,6 +15,7 @@ export class SqlServerConfigService implements TypeOrmOptionsFactory {
       host: this.configService.get<string>('SA_ADMIN_DB_HOST'),
       database: this.configService.get<string>('SA_ADMIN_DB_NAME'),
       entities: ['dist/**/**/*.entity{.ts,.js}'],
+      logging: process.env.NODE_ENV === 'dev' ? ["query", "error"] : undefined
     }
   }
 }

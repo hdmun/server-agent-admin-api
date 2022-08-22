@@ -21,7 +21,7 @@ describe('HostService Test', () => {
 
   describe('getHosts', () => {
     it('should return an array of hosts', async () => {
-      const hosts = [{ hostName: 'TestHost', ipAddr: 'localhost', alive: false, monitoring: false }];
+      const hosts = [{ hostName: 'TestHost', ipAddr: 'localhost', process: [], alive: false, monitoring: false }];
       jest.spyOn(hostRepository, 'find')
         .mockResolvedValue(hosts);
 
