@@ -16,7 +16,7 @@ export class ServerService {
     return Promise.all<Promise<ServerProcessResponse>>(
       servers.map(async (server) => {
         try {
-          const state = await this.agentRepository.getProcessState(server.hostServer.ipAddr, server.serverName)
+          const state = await this.agentRepository.getProcessState(server.hostServer.ipAddr, server.hostName, server.serverName)
           if (state) {
             return {
               hostName: server.hostName,
@@ -51,7 +51,7 @@ export class ServerService {
     })
   }
 
-  async killServer(address: string, dto: ServerProcessKillRequest) {
-    return await this.agentRepository.killServer(address, dto)
+  async killServer(address: string, hostName: string, dto: ServerProcessKillRequest) {
+    return await this.agentRepository.killServer(address, hostName, dto)
   }
 }

@@ -27,10 +27,13 @@ export class ServerController {
 
       // todo: validate param
 
-      return await this.serverService.killServer(server.hostServer.ipAddr, {
-        killCommand: command,
-        serverName
-      })
+      return await this.serverService.killServer(
+        server.hostServer.ipAddr,
+        server.hostName,
+        {
+          killCommand: command,
+          serverName
+        })
     }
     catch (error) {
       throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR)

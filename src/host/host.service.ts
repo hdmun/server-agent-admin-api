@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HostServer } from './entity/host-server.entity';
 import { HostServerRepository } from './host.repository';
 import { AgentRepository } from '~/agent/agent.repository';
@@ -6,6 +6,8 @@ import { ServerMonitoringRequest } from '~/dto/monitoring';
 
 @Injectable()
 export class HostService {
+  private readonly logger = new Logger(HostService.name);
+
   constructor(
     private readonly hostRepository: HostServerRepository,
     private readonly agentRepository: AgentRepository
@@ -16,11 +18,13 @@ export class HostService {
     return Promise.all<Promise<HostServer>>(
       hosts.map(async (host) => {
         try {
-          const hostState = await this.agentRepository.getHostState(host.ipAddr)
+          const hostState = await this.agentRepository.getHostState(host.ipAddr, host.hostName)
           host.monitoring = hostState.monitoring
           host.alive = hostState.alive
         }
-        catch { }
+        catch (error) {
+          this.logger.error(`'getHostState' ${host.hostName} ${host.ipAddr}, ${error}`)
+        }
 
         return host
       })
@@ -37,7 +41,12 @@ export class HostService {
       throw Error(`invalid HostName: ${dto.hostName}`)
     }
 
-    return await this.agentRepository
-      .updateMonitoring(hostServer.ipAddr, dto)
+    try {
+      return await this.agentRepository
+        .updateMonitoring(hostServer.ipAddr, dto)
+    }
+    catch (error) {
+      this.logger.error(`'updateMonitoring' ${dto.hostName} ${hostServer.ipAddr}, ${error}`)
+    }
   }
 }
